@@ -2138,6 +2138,118 @@
   },
 
   {
+    "Package": "amdrocm-hipfile-test",
+    "Version": "",
+    "Architecture": "amd64",
+    "BuildArch": "x86_64",
+    "DEBDepends": [
+      "amdrocm-hipfile-devel"
+    ],
+    "RPMRequires": [
+      "amdrocm-hipfile-devel"
+    ],
+    "Maintainer": "hipFile Maintainer <hipfile-maintainer@amd.com>",
+    "Description_Short": "AMD Infinity Storage library that supports IO directly to the GPU",
+    "Description_Long": "AMD Infinity Storage library that supports IO directly to the GPU",
+    "Section": "devel",
+    "Priority": "optional",
+    "Group": "unknown",
+    "License": "MIT",
+    "Vendor": "Advanced Micro Devices, Inc",
+    "Homepage": "https://github.com/ROCm/rocm-systems",
+    "Artifactory": [
+      {
+        "Artifact": "hipfile",
+        "Artifact_Subdir": [
+          {
+            "Name": "hipfile",
+            "Components": [
+              "test"
+            ]
+          }
+        ]
+      }
+    ],
+    "Gfxarch": "False"
+  },
+
+  {
+    "Package": "amdrocm-hipfile",
+    "Version": "",
+    "Architecture": "amd64",
+    "BuildArch": "x86_64",
+    "DEBDepends": [
+      "libc6",
+      "amdrocm-base"
+    ],
+    "RPMRequires": [
+      "amdrocm-base"
+    ],
+    "Maintainer": "hipFile Maintainer <hipfile-maintainer@amd.com>",
+    "Description_Short": "AMD Infinity Storage library that supports IO directly to the GPU",
+    "Description_Long": "AMD Infinity Storage library that supports IO directly to the GPU",
+    "Section": "devel",
+    "Priority": "optional",
+    "Group": "unknown",
+    "License": "MIT",
+    "Vendor": "Advanced Micro Devices, Inc",
+    "Homepage": "https://github.com/ROCm/rocm-systems/",
+    "Artifactory": [
+      {
+        "Artifact": "hipfile",
+        "Artifact_Subdir": [
+          {
+            "Name": "hipfile",
+            "Components": [
+              "lib",
+              "doc"
+            ]
+          }
+        ]
+      }
+    ],
+
+    "Gfxarch": "False"
+  },
+
+  {
+    "Package": "amdrocm-hipfile-devel",
+    "Version": "",
+    "Architecture": "amd64",
+    "BuildArch": "x86_64",
+    "DEBDepends": [
+      "amdrocm-hipfile"
+    ],
+    "RPMRequires": [
+      "amdrocm-hipfile"
+    ],
+    "Maintainer": "hipFile Maintainer <hipfile-maintainer@amd.com>",
+    "Description_Short": "AMD Infinity Storage library that supports IO directly to the GPU",
+    "Description_Long": "AMD Infinity Storage library that supports IO directly to the GPU",
+    "Section": "devel",
+    "Priority": "optional",
+    "Group": "unknown",
+    "License": "MIT",
+    "Vendor": "Advanced Micro Devices, Inc",
+    "Homepage": "https://github.com/ROCm/rocm-systems/",
+    "Artifactory": [
+      {
+        "Artifact": "hipfile",
+        "Artifact_Subdir": [
+          {
+            "Name": "hipfile",
+            "Components": [
+              "dev"
+            ]
+          }
+        ]
+      }
+    ],
+
+    "Gfxarch": "False"
+  },
+
+  {
     "Package": "amdrocm-dnn",
     "Version": "",
     "Architecture": "amd64",
@@ -2780,6 +2892,7 @@
       "amdrocm-dnn",
       "amdrocm-rccl",
       "amdrocm-rocshmem",
+      "amdrocm-hipfile",
       "amdrocm-math-common",
       "amdrocm-amdsmi",
       "amdrocm-hipify",
@@ -2801,6 +2914,7 @@
       "amdrocm-dnn",
       "amdrocm-rccl",
       "amdrocm-rocshmem",
+      "amdrocm-hipfile",
       "amdrocm-math-common",
       "amdrocm-amdsmi",
       "amdrocm-hipify",
@@ -2862,6 +2976,7 @@
       "amdrocm-hipblas-common-devel",
       "amdrocm-rccl-devel",
       "amdrocm-rocshmem-devel",
+      "amdrocm-hipfile-devel",
       "amdrocm-dnn-devel",
       "amdrocm-decode-devel",
       "amdrocm-jpeg-devel"
@@ -2880,6 +2995,7 @@
       "amdrocm-hipblas-common-devel",
       "amdrocm-rccl-devel",
       "amdrocm-rocshmem-devel",
+      "amdrocm-hipfile-devel",
       "amdrocm-dnn-devel",
       "amdrocm-decode-devel",
       "amdrocm-jpeg-devel"
