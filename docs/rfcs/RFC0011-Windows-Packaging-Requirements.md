@@ -52,7 +52,7 @@ Windows ROCm software must be delivered using packaging formats appropriate to t
 The supported packaging formats are:
 
 - **MSI packages** as the primary OS-integrated installation unit
-- **Winget packages** as Windows package-manger-facing meta packages or installers that reference AMD-hosted MSI artifacts
+- **Winget packages** as Windows package-manager-facing meta packages or installers that reference AMD-hosted MSI artifacts
 
 Note that MSI packages are the authoritative Windows installation unit.
 
@@ -158,7 +158,7 @@ New installations must not place core ROCm runtime DLLs into `System32`. Legacy 
 
 ### OpenCL Changes
 
-OpenCL will laregely in part be sustained and no changes are expected to be implemented. Installing, upgrading, or uninstalling the ROCm SDK must have no effect on an OpenCL environment.
+OpenCL will largely in part be sustained and no changes are expected to be implemented. Installing, upgrading, or uninstalling the ROCm SDK must have no effect on an OpenCL environment.
 
 Additionally, `amd_comgr_3.dll` will be renamed to `amd_comgr_opencl.dll` to better reflect its use case and so that it can be shipped alongside the driver version 26.30 in Q3.
 
@@ -246,10 +246,10 @@ All device-specific packages must:
 
 Additionally device specific installation must support the following use cases:
 
-1. **ISV installler invokes ROCm Runtime Core via winget**:
+1. **ISV installer invokes ROCm Runtime Core via winget**:
 
 Winget starts launcher
-Launcher automatically detects avaialble GPU architectures
+Launcher automatically detects available GPU architectures
 Runs installers for each GPU architecture (host installers and per device installers)
 
 2. **Software developer use case**:
@@ -286,7 +286,7 @@ The following behavior matrix must be supported:
 | Newer version detected at the same target path             | Abort with error and instruct the user to uninstall or choose a different path                     |
 | Different major.minor version detected at a different path | Allow side-by-side installation                                                                    |
 
-Path versions must upgrade in place within the same `X.Y` installation root.
+Patch versions must upgrade in place within the same `X.Y` installation root.
 
 Major.minor releases must be installable side by side in distinct versioned roots.
 
@@ -306,7 +306,7 @@ Uninstall requirements:
 - Remove files owned by the installation being removed
 - Remove environment-variable updates owned by that installation if they still reference that installation
 - Remove registry entries created by that installation
-- Remove package-owned  `PATH` entries associated with that installation only
+- Remove package-owned `PATH` entries associated with that installation only
 - Avoid impacting other installed ROCm major.minor versions
 
 ### Environment Variables
@@ -315,8 +315,8 @@ After successful installation, Windows installers must publish a stable discover
 
 At minimum:
 
-- `ROCM_PATH` may point to the installation root of the latest installed and active ROCm version, but must be treatd as a convenience variable only, not a guaranteed or authoritative source of truth
-- The selected installation's `bin` directory msy be prepended to the relevant `PATH`, provided:
+- `ROCM_PATH` may point to the installation root of the latest installed and active ROCm version, but must be treated as a convenience variable only, not a guaranteed or authoritative source of truth
+- The selected installation's `bin` directory may be prepended to the relevant `PATH`, provided:
     - Duplicate `PATH` entries are not introduced across reinstalls or upgrades
     - Existing user or system configuration is not overridden in a way that breaks other ROCm installations or development environments
 - Per-machine installs must modify machine-scoped environment variables
@@ -324,7 +324,7 @@ At minimum:
 
 The following constraints apply:
 
-- Tools and libraries withiin the same ROcm isntallation must be able to discover one another without relying on global environment variables such as `ROCM_PATH`
+- Tools and libraries within the same ROCm installation must be able to discover one another without relying on global environment variables such as `ROCM_PATH`
 - Applications and build systems must not assume a fixed installation path, as ROCm may be installed in custom directories, build trees, or distributed via package managers such as Python wheels
 - Build systems and applications that require deterministic selection of a specific ROCm version should rely on:
     - Versioned installation directories
@@ -444,7 +444,7 @@ Windows packaging must support a clear redistribution story for ISVs without req
 The supported redistribution models are:
 
 1. **Application-local bundled runtime files** for supported runtime subsets
-1. **Optional runtime-orianted MSI or winget install path** for customers who prefer a system-installed runtime
+1. **Optional runtime-oriented MSI or winget install path** for customers who prefer a system-installed runtime
 
 Redistribution documentation must clearly distinguish:
 
