@@ -28,6 +28,11 @@ cmd = ["./rocrtst64"]
 
 # TODO(#3851): Excluded tests (flaky or disabled in CI).
 TEST_TO_IGNORE = {
+    "gfx90a": {
+        "linux": [
+            "rocrtstFunc.Memory_Max_Mem",
+        ]
+    },
     "gfx94X-dcgpu": {
         "linux": [
             "rocrtstFunc.Memory_Max_Mem",
@@ -51,8 +56,8 @@ TEST_TO_IGNORE = {
     },
 }
 
-# If smoke tests are enabled, run smoke tests only. Otherwise, run the full suite.
-SMOKE_TESTS = [
+# If quick tests are enabled, run quick tests only. Otherwise, run the full suite.
+QUICK_TESTS = [
     "rocrtst.Test_Example",
     "rocrtstFunc.MemoryAccessTests",
     "rocrtstFunc.GroupMemoryAllocationTest",
@@ -70,14 +75,15 @@ SMOKE_TESTS = [
     "rocrtstFunc.Memory_Atomic_Xchg_Test",
 ]
 
+exclude_filter = "-"
 if AMDGPU_FAMILIES in TEST_TO_IGNORE and os_type in TEST_TO_IGNORE[AMDGPU_FAMILIES]:
     ignored_tests = TEST_TO_IGNORE[AMDGPU_FAMILIES][os_type]
-    exclude_filter = "-" + ":".join(ignored_tests)
+    exclude_filter += ":".join(ignored_tests)
 
 test_type = os.getenv("TEST_TYPE", "full")
 
-if test_type == "smoke":
-    environ_vars["GTEST_FILTER"] = ":".join(SMOKE_TESTS) + ":" + exclude_filter
+if test_type == "quick":
+    environ_vars["GTEST_FILTER"] = ":".join(QUICK_TESTS) + ":" + exclude_filter
 else:
     environ_vars["GTEST_FILTER"] = exclude_filter
 

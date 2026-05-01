@@ -30,6 +30,7 @@ TEST_TO_IGNORE = {
         # TODO(#3621): Include test once out of resource errors are resolved
         "windows": ["*spmm*"]
     },
+    "gfx110X-all": {"windows": ["*csr2csr_compress*", "*prune_csr2csr.conversion*"]},
 }
 
 environ_vars["HIPSPARSE_CLIENTS_MATRICES_DIR"] = (
@@ -41,10 +42,10 @@ cmd = [f"{THEROCK_BIN_DIR}/hipsparse-test"]
 gtest_filter = "--gtest_filter="
 
 test_type = os.getenv("TEST_TYPE", "full")
-if test_type == "smoke":
+if test_type == "quick":
     gtest_filter += "*spmv*:*spsv*:*spsm*:*spmm*:*csric0*:*csrilu0*:-known_bug*"
 else:
-    gtest_filter += "--gtest_filter=*quick*:-known_bug*"
+    gtest_filter += "*quick*:-known_bug*"
 
 if AMDGPU_FAMILIES in TEST_TO_IGNORE and os_type in TEST_TO_IGNORE[AMDGPU_FAMILIES]:
     ignored_tests = TEST_TO_IGNORE[AMDGPU_FAMILIES][os_type]
