@@ -40,6 +40,15 @@ permissions:
   contents: read
 
 jobs:
+  test_cat:
+    runs-on: ${{ inputs.test_runs_on }}
+    defaults:
+      run:
+        shell: bash
+    steps:
+       - name: print
+         run: cat /etc/podinfo/gha-gpu-isolation-settings
+
   test_component:
     name: >-
       Test ${{ fromJSON(inputs.component).job_name }}
