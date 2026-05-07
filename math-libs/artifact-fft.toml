@@ -26,4 +26,5 @@ include = [
 [components.test."math-libs/hipFFT/stage"]
 include = [
   "bin/hipfft-test*",
+  "bin/hipfft/**",
 ]
