@@ -71,13 +71,20 @@ CONFIG_PRESETS_MAP = {
 }
 
 
+def _log(msg: str):
+    print(f"[setup_ccache] {msg}", file=sys.stderr)
+
+
 def gen_config(dir: Path, compiler_check_file: Path, args: argparse.Namespace):
     lines = []
 
     config_preset: str = args.config_preset
     selected_config = CONFIG_PRESETS_MAP[config_preset]
+    _log(f"Config preset: {config_preset}")
     for k, v in selected_config.items():
         lines.append(f"{k} = {v}")
+
+    _log(f"Platform: {'Windows' if IS_WINDOWS else 'POSIX'}")
 
     # Log paths: use --log-dir if provided, otherwise default to
     # REPO_ROOT/build/logs/ccache. On Windows CI the build dir is on
@@ -89,6 +96,7 @@ def gen_config(dir: Path, compiler_check_file: Path, args: argparse.Namespace):
         ccache_log_dir.mkdir(parents=True, exist_ok=True)
         lines.append(f"log_file = {ccache_log_dir / 'ccache.log'}")
         lines.append(f"stats_log = {ccache_log_dir / 'ccache_stats.log'}")
+        _log(f"Log dir: {ccache_log_dir}")
 
     # (TODO:consider https://ccache.dev/manual/4.6.1.html#_storage_interaction)
     # Switch based on cache type.
@@ -97,6 +105,7 @@ def gen_config(dir: Path, compiler_check_file: Path, args: argparse.Namespace):
             raise ValueError(f"Expected --remote-storage with --remote option")
         lines.append(f"remote_storage = {args.remote_storage}")
         lines.append(f"remote_only = true")
+        _log(f"Storage: remote only ({args.remote_storage})")
     else:
         # Default, local.
         local_path: Path = args.local_path
@@ -104,6 +113,7 @@ def gen_config(dir: Path, compiler_check_file: Path, args: argparse.Namespace):
             local_path = dir / "local"
         local_path.mkdir(parents=True, exist_ok=True)
         lines.append(f"cache_dir = {local_path}")
+        _log(f"Storage: local ({local_path})")
 
     # Compiler Check
     if not IS_WINDOWS:
@@ -113,10 +123,12 @@ def gen_config(dir: Path, compiler_check_file: Path, args: argparse.Namespace):
             f"compiler_check = {sys.executable} {compiler_check_file} "
             f"{dir / 'compiler_check_cache'} %compiler%"
         )
+        _log(f"Compiler check: custom script ({compiler_check_file})")
     else:
         # On Windows the LLVM toolchain is compiled statically linked,
         # therefore using content is sufficient to detect changes.
         lines.append(f"compiler_check = content")
+        _log("Compiler check: content")
 
     # Base directory for path normalization.
     # On Windows CI, B:\ is a junction to C:\{GUID}\ where the GUID is unique
@@ -128,6 +140,9 @@ def gen_config(dir: Path, compiler_check_file: Path, args: argparse.Namespace):
     if args.base_dir:
         base = args.base_dir.resolve()
         lines.append(f"base_dir = {base}")
+        _log(f"Base dir: {args.base_dir} -> resolved: {base}")
+    else:
+        _log("Base dir: not set")
 
     # Sloppiness settings.
     # include_file_ctime:
@@ -157,26 +172,30 @@ def run(args: argparse.Namespace):
 
     config_contents = gen_config(dir, compiler_check_file, args)
     if args.init or not config_file.exists():
-        print(f"Initializing ccache dir: {dir}", file=sys.stderr)
+        _log(f"Initializing ccache dir: {dir}")
         dir.mkdir(parents=True, exist_ok=True)
         config_file.write_text(config_contents)
+        _log(f"Wrote config: {config_file}")
         if not IS_WINDOWS:
             compiler_check_file.write_text(POSIX_COMPILER_CHECK_SCRIPT)
+            _log(f"Wrote compiler check script: {compiler_check_file}")
 
     else:
         # Check to see if updated.
         if config_file.read_text() != config_contents:
-            print(
-                f"NOTE: {config_file} does not match expected. Run with --init to regenerate",
-                file=sys.stderr,
+            _log(
+                f"NOTE: {config_file} does not match expected. "
+                "Run with --init to regenerate"
             )
+        else:
+            _log(f"Config up to date: {config_file}")
         if not IS_WINDOWS and (
             not compiler_check_file.exists()
             or compiler_check_file.read_text() != POSIX_COMPILER_CHECK_SCRIPT
         ):
-            print(
-                f"NOTE: {compiler_check_file} does not match expected. Run with --init to regenerate it",
-                file=sys.stderr,
+            _log(
+                f"NOTE: {compiler_check_file} does not match expected. "
+                "Run with --init to regenerate it"
             )
 
     # Reset statistic counters
@@ -193,6 +212,12 @@ def run(args: argparse.Namespace):
                 f"ERROR! Zeroing statistic counters failed. Message: {proc_ccache.stderr}",
                 file=sys.stderr,
             )
+    # Print the generated config for visibility in CI logs.
+    _log("Generated ccache config:")
+    for line in config_contents.splitlines():
+        if line.strip():
+            _log(f"  {line}")
+
     # Output options.
     if IS_WINDOWS:
         print(f"set CCACHE_CONFIGPATH={config_file}")
