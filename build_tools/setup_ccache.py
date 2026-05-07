@@ -43,7 +43,7 @@ CACHE_SRV_REL = "http://bazelremote-svc-rel.bazelremote-ns.svc.cluster.local:808
 # Bump this version when making hash-affecting config changes (sloppiness,
 # compiler_check, etc.) to logically isolate new cache entries from stale
 # ones on the shared remote cache server.
-CCACHE_NAMESPACE_VERSION = "v1"
+CCACHE_NAMESPACE_VERSION = "v2"
 
 DEFAULT_LOG_DIR = REPO_ROOT / "build" / "logs" / "ccache"
 
@@ -117,6 +117,17 @@ def gen_config(dir: Path, compiler_check_file: Path, args: argparse.Namespace):
         # On Windows the LLVM toolchain is compiled statically linked,
         # therefore using content is sufficient to detect changes.
         lines.append(f"compiler_check = content")
+
+    # Base directory for path normalization.
+    # On Windows CI, B:\ is a junction to C:\{GUID}\ where the GUID is unique
+    # per runner VM. Clang and CMake sometimes resolve paths through the
+    # junction, embedding the GUID in include paths and compiler flags. This
+    # makes ccache entries non-portable across runners. Setting base_dir to the
+    # resolved build directory root makes ccache normalize these paths to
+    # relative before hashing, so entries become runner-independent.
+    if args.base_dir:
+        base = args.base_dir.resolve()
+        lines.append(f"base_dir = {base}")
 
     # Sloppiness settings.
     # include_file_ctime:
@@ -229,6 +240,14 @@ def main(argv: list[str]):
         type=Path,
         help="Directory for ccache log files. Defaults to REPO_ROOT/build/logs/ccache. "
         "On Windows CI, pass BUILD_DIR/logs/ccache so logs land in the build tree.",
+    )
+
+    p.add_argument(
+        "--base-dir",
+        type=Path,
+        help="Base directory for ccache path normalization. Absolute paths under "
+        "this directory are rewritten to relative paths before hashing. On Windows "
+        "CI, pass the build folder (e.g. B:/build) to normalize junction-resolved paths.",
     )
 
     preset_group = p.add_mutually_exclusive_group()

@@ -128,7 +128,8 @@ jobs:
             --release-type "${{ inputs.release_type }}" \
             --dir "$(dirname $CCACHE_CONFIGPATH)" \
             --local-path "$CACHE_DIR/ccache" \
-            --log-dir "${BUILD_DIR}/logs/ccache"
+            --log-dir "${BUILD_DIR}/logs/ccache" \
+            --base-dir "${BUILD_DIR}"
 
       # Note: no AWS credentials should be needed here since our CI buckets
       # all currently have public read access.

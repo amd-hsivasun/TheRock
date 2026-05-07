@@ -119,7 +119,8 @@ jobs:
             --config-preset "github-oss-dev" \
             --dir "$(dirname $CCACHE_CONFIGPATH)" \
             --local-path "$CACHE_DIR/ccache" \
-            --log-dir "${BUILD_DIR}/logs/ccache"
+            --log-dir "${BUILD_DIR}/logs/ccache" \
+            --base-dir "${BUILD_DIR}"
 
       - name: Fetch sources
         timeout-minutes: 30
