@@ -72,13 +72,23 @@ jobs:
     env:
       STAGE_NAME: ${{ inputs.stage_name }}
       AMDGPU_FAMILIES: ${{ inputs.amdgpu_family }}
-      BUILD_DIR: B:\build
+      BUILD_DIR: D:\build
       CCACHE_CONFIGPATH: ${{ github.workspace }}/.ccache/ccache.conf
       CACHE_DIR: ${{ github.workspace }}/.cache
       TEATIME_FORCE_INTERACTIVE: 0
       RELEASE_TYPE: ${{ inputs.release_type }}
 
     steps:
+      # Map B:\build to a stable drive letter via subst. B:\ is a volume mount
+      # to C:\{GUID}\ where the GUID changes per runner VM. Clang resolves
+      # paths through the mount, embedding the GUID in include paths, which
+      # defeats ccache (entries become runner-specific). subst is transparent
+      # to path resolution, so D:\build paths stay as D:\build in ccache
+      # manifests regardless of which runner executes the job.
+      - name: Stabilize build drive path
+        shell: cmd
+        run: "subst D: B:\\"
+
       - name: Checkout Repository
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
