@@ -175,24 +175,7 @@ jobs:
             -DTHEROCK_PACKAGE_VERSION=${{ inputs.rocm_package_version }} \
             -DCMAKE_C_COMPILER_LAUNCHER=ccache \
             -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
-            ${{ steps.stage_config.outputs.cmake_args }} \
-            -DTHEROCK_ENABLE_BLAS=OFF \
-            -DTHEROCK_ENABLE_FFT=OFF \
-            -DTHEROCK_ENABLE_FFTW3=OFF \
-            -DTHEROCK_ENABLE_MIOPEN=OFF \
-            -DTHEROCK_ENABLE_MIOPENPROVIDER=OFF \
-            -DTHEROCK_ENABLE_HIPBLASLTPROVIDER=OFF \
-            -DTHEROCK_ENABLE_HIPDNN=OFF \
-            -DTHEROCK_ENABLE_HIPDNN_INTEGRATION_TESTS=OFF \
-            -DTHEROCK_ENABLE_HIPDNN_SAMPLES=OFF \
-            -DTHEROCK_ENABLE_HIPKERNELPROVIDER=OFF \
-            -DTHEROCK_ENABLE_HOST_BLAS=OFF \
-            -DTHEROCK_ENABLE_COMPOSABLE_KERNEL=OFF \
-            -DTHEROCK_ENABLE_ROCWMMA=OFF \
-            -DTHEROCK_ENABLE_SOLVER=OFF \
-            -DTHEROCK_ENABLE_SPARSE=OFF \
-            -DTHEROCK_ENABLE_LIBHIPCXX=OFF \
-            -DTHEROCK_ENABLE_PRIM=OFF
+            ${{ steps.stage_config.outputs.cmake_args }}
 
       - name: Build stage
         run: |
