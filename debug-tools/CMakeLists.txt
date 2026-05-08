@@ -259,6 +259,17 @@ if(THEROCK_ENABLE_ROCGDB)
     message(WARNING "Configuring ROCgdb with modified source directory: ${THEROCK_ROCGDB_SOURCE_DIR}")
   endif()
 
+  # Default to building ROCm's rocgdb branch (with NOTICES.txt, roccoremerge, etc.).
+  # For upstream master builds, which currently lack AMD-specific files:
+  #   - NOTICES.txt file
+  #   - roccoremerge program
+  #   - roccoremerge man page
+  # set: -DTHEROCK_ROCGDB_UPSTREAM_BUILD=ON
+  # Note: upstream master will eventually include roccoremerge.
+  if(NOT DEFINED THEROCK_ROCGDB_UPSTREAM_BUILD)
+    set(THEROCK_ROCGDB_UPSTREAM_BUILD OFF)
+  endif()
+
   therock_cmake_subproject_declare(rocgdb
     USE_DIST_AMDGPU_TARGETS
     EXTERNAL_SOURCE_DIR "rocgdb"
@@ -270,6 +281,7 @@ if(THEROCK_ENABLE_ROCGDB)
       "-DSHARED_PYTHON_EXECUTABLES=${_rocgdb_python_executables_escaped}"
       "-DTHEROCK_BUNDLE_SYSDEPS=${THEROCK_BUNDLE_SYSDEPS}"
       "-DROCGDB_SOURCE_DIR=${THEROCK_ROCGDB_SOURCE_DIR}"
+      "-DROCGDB_UPSTREAM_BUILD=${THEROCK_ROCGDB_UPSTREAM_BUILD}"
     COMPILER_TOOLCHAIN
       amd-llvm
     RUNTIME_DEPS
