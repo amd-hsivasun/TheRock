@@ -109,6 +109,16 @@ def _build_container_options(job_config: dict, platform: str) -> dict:
     return job_config
 
 
+# Common settings for rocgdb jobs
+_rocgdb_common = {
+    "fetch_artifact_args": "--debug-tools --tests",
+    "timeout_minutes": 30,
+    "platform": ["linux"],
+    "total_shards": 1,
+    "container_image": "ghcr.io/rocm/no_rocm_image_ubuntu24_04_rocgdb@sha256:939b8e35887144d1ca4eca928dc2869991339cab869168790e495fc0a5907bbb",
+    "container_options": ["--cap-add=SYS_PTRACE"],
+}
+
 test_matrix = {
     # Sanity tests - always run first as a prerequisite for other component tests
     "sanity": {
@@ -249,15 +259,16 @@ test_matrix = {
             "windows": 1,
         },
     },
-    "rocgdb": {
-        "job_name": "rocgdb",
-        "fetch_artifact_args": "--debug-tools --tests",
-        "timeout_minutes": 45,
-        "test_script": f"python {_get_script_path('test_rocgdb.py')}",
-        "platform": ["linux"],
-        "total_shards": 1,
-        "container_image": "ghcr.io/rocm/no_rocm_image_ubuntu24_04_rocgdb@sha256:939b8e35887144d1ca4eca928dc2869991339cab869168790e495fc0a5907bbb",
-        "container_options": ["--cap-add=SYS_PTRACE"],
+    "rocgdb-cpu": {
+        **_rocgdb_common,
+        "job_name": "rocgdb-cpu",
+        "test_script": f"python {_get_script_path('test_rocgdb.py')} --tests gdb.dwarf2",
+        "cpu_runner": True,
+    },
+    "rocgdb-gpu": {
+        **_rocgdb_common,
+        "job_name": "rocgdb-gpu",
+        "test_script": f"python {_get_script_path('test_rocgdb.py')} --tests gdb.rocm",
     },
     "rocr-debug-agent": {
         "job_name": "rocr-debug-agent",
