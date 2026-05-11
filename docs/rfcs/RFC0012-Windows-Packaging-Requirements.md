@@ -60,8 +60,16 @@ Note that MSI packages are the authoritative Windows installation unit.
 
 The ROCm Core SDK on Windows must be installed under a versioned installation root to support multi-version installation of major.minor releases.
 
+Per-machine (default):
+
 ```
 C:\Program Files\AMD\ROCm\Core-X.Y
+```
+
+Per-user:
+
+```
+%LOCALAPPDATA%\AMD\ROCm\Core-X.Y
 ```
 
 Where:
@@ -95,8 +103,16 @@ This allows users, scripts, and build systems to either target the latest instal
 
 Additionally, all Windows caches for FFT and other programs will be stored in the following location:
 
+Per-machine (default):
+
 ```
 C:\ProgramData\AMD\ROCm\
+```
+
+Per-user:
+
+```
+%LOCALAPPDATA%\AMD\ROCm\
 ```
 
 Caches are stored system wide and matches Windows guidelines for application data.
