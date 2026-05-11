@@ -151,6 +151,7 @@ The redistributable installers include:
 | :-------------------------- | :--------------------------------------- |
 | amdrocm-runtimes.msi        | ROCm Runtime Redistributable             |
 | amdrocm-core.msi            | ROCm Core Runtime Redistributable        |
+| amdrocm-core-devel.msi      | ROCm Core SDK Development                |
 | amdrocm-developer-tools.msi | ROCm Core Developer Tools                |
 | amdrocm-core-sdk.msi        | ROCm Core SDK Redistributable            |
 | amdrocm-raytracing.msi      | ROCm Ray Tracing Runtime Redistributable |
@@ -184,24 +185,52 @@ Windows package naming should remain aligned with the Linux TheRock naming model
 
 The `amdrocm-` naming prefix is used for AMD-published Windows package components where a package-level identity is exposed directly to users.
 
-| File Name                     | Friendly Name                            | Contents                                                                                              | Description                                 |
-| :---------------------------- | :--------------------------------------- | :---------------------------------------------------------------------------------------------------- | :------------------------------------------ |
-| `amdrocm-runtimes.msi`        | ROCm Runtime Redistributable             | HIP runtime, runtime compiler support, required runtime libraries                                     | Run pre-built ROCm projects                 |
-| `amdrocm-core.msi`            | ROCm Core Runtime Redistributable        | Core runtime components, core libraries, utilities, device discovery tools                            | Run ROCm projects                           |
-| `amdrocm-developer-tools.msi` | ROCm Core Developer Tools                | Debuggers, profilers, tracing tools, diagnostics, performance analysis tools                          | Debug and optimize ROCm projects            |
-| `amdrocm-core-sdk.msi`        | ROCm Core SDK Redistributable            | Core runtime, development headers, CMake configs, libraries, and developer tools                      | Everything                                  |
-| `amdrocm-raytracing.msi`      | ROCm Ray Tracing Runtime Redistributable | Ray tracing runtime libraries, acceleration structures, and GPU architecture-specific binaries        | Run ROCm ray tracing workloads              |
-| `amdrocm-raytracing-sdk.msi`  | ROCm Ray Tracing SDK                     | Ray tracing development headers, SDK libraries, samples, and tooling                                  | Develop and build ROCm ray tracing projects |
+#### Meta Packages
+
+The following meta packages aggregate fine-grained packages into user-facing installation units. These map 1:1 to the Linux meta packages defined in [RFC0009](./RFC0009-OS-Packaging-Requirements.md#meta-packages).
+
+| File Name                     | Friendly Name                            | Included Packages                                                                                                                                                                                                                                       | Description                                 |
+| :---------------------------- | :--------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | :------------------------------------------ |
+| `amdrocm-runtimes.msi`        | ROCm Runtime Redistributable             | amdrocm-runtime, amdrocm-sysdeps                                                                                                                                                                                                                       | Run pre-built ROCm projects                 |
+| `amdrocm-core.msi`            | ROCm Core Runtime Redistributable        | amdrocm-base, amdrocm-sysdeps, amdrocm-llvm, amdrocm-runtime, amdrocm-debugger, amdrocm-blas, amdrocm-rand, amdrocm-fft, amdrocm-solver, amdrocm-sparse, amdrocm-ck, amdrocm-dnn, amdrocm-rccl, amdrocm-rocshmem, amdrocm-amdsmi, amdrocm-hipify, amdrocm-decode, amdrocm-jpeg | Run ROCm projects                           |
+| `amdrocm-core-devel.msi`      | ROCm Core SDK Development                | amdrocm-core + amdrocm-runtime-devel, amdrocm-llvm-devel, amdrocm-fft-devel, amdrocm-blas-devel, amdrocm-sparse-devel, amdrocm-solver-devel, amdrocm-rand-devel, amdrocm-ccl-devel, amdrocm-opencl-devel, amdrocm-rccl-devel, amdrocm-rocshmem-devel, amdrocm-dnn-devel, amdrocm-decode-devel, amdrocm-jpeg-devel | Build software with ROCm Core               |
+| `amdrocm-developer-tools.msi` | ROCm Core Developer Tools                | amdrocm-base, amdrocm-amdsmi, amdrocm-profiler-base, amdrocm-profiler                                                                                                                                                                                 | Debug and optimize ROCm projects            |
+| `amdrocm-core-sdk.msi`        | ROCm Core SDK Redistributable            | amdrocm-core-devel, amdrocm-developer-tools, amdrocm-rdc, amdrocm-opencl                                                                                                                                                                               | Everything                                  |
+| `amdrocm-raytracing.msi`      | ROCm Ray Tracing Runtime Redistributable | Ray tracing runtime libraries, acceleration structures, and GPU architecture-specific binaries                                                                                                                                                          | Run ROCm ray tracing workloads              |
+| `amdrocm-raytracing-sdk.msi`  | ROCm Ray Tracing SDK                     | Ray tracing development headers, SDK libraries, samples, and tooling                                                                                                                                                                                    | Develop and build ROCm ray tracing projects |
+
+#### Fine-Grained Packages
+
+Windows package granularity must match the Linux model defined in [RFC0009](./RFC0009-OS-Packaging-Requirements.md#package-granularity). Each fine-grained package separates runtime and development components. On Windows these are implemented as MSI features or individual MSI packages, depending on installer architecture.
+
+| Package Name                 | Runtime Contents                                                     | Dev Package Contents (additional)                |
+| :--------------------------- | :------------------------------------------------------------------- | :----------------------------------------------- |
+| `amdrocm-sysdeps`            | Bundled 3rd party dependencies (libdrm, libelf, ncurses, etc.)       |                                                  |
+| `amdrocm-base`               | rocminfo, rocm-core, rocprofiler-register, rocm-cmake, half          |                                                  |
+| `amdrocm-llvm`               | amd-llvm, hipcc, aux-overlay                                         | amd-llvm headers, hipcc headers                  |
+| `amdrocm-runtime`            | ROCR-Runtime, CLR, rocm-kpack, amd-comgr                             | ROCR-Runtime headers, CLR headers, comgr headers |
+| `amdrocm-amdsmi`             | AMD SMI libraries and tools                                          |                                                  |
+| `amdrocm-blas`               | hipBLAS, rocBLAS, hipBLASLt, hipSPARSELt                             | hipBLAS headers, rocBLAS headers, hipBLAS-common |
+| `amdrocm-sparse`             | rocSPARSE, hipSPARSE                                                 | rocSPARSE headers, hipSPARSE headers             |
+| `amdrocm-solver`             | rocSOLVER, hipSOLVER                                                 | rocSOLVER headers, hipSOLVER headers             |
+| `amdrocm-fft`                | rocFFT, hipFFT                                                       | rocFFT headers, hipFFT headers                   |
+| `amdrocm-rand`               | rocRAND, hipRAND                                                     | rocRAND headers, hipRAND headers                 |
+| `amdrocm-ccl-devel`          |                                                                      | rocPRIM, hipCUB, rocThrust, libhipcxx, rocWMMA   |
+| `amdrocm-ck`                 | composable_kernel                                                    |                                                  |
+| `amdrocm-dnn`                | hipDNN, MIOpen                                                       | hipDNN headers, MIOpen headers, flatbuffers      |
+| `amdrocm-rccl`               | RCCL                                                                 | RCCL headers                                     |
+| `amdrocm-rocshmem`           | rocSHMEM                                                             | rocSHMEM headers                                 |
+| `amdrocm-profiler-base`      | aqlprofile, rocprofiler-sdk, roctracer, rocprof-trace-decoder        |                                                  |
+| `amdrocm-profiler`           | rocprofiler-compute, rocprofiler-systems                             |                                                  |
+| `amdrocm-debugger`           | rocgdb, rocr-debug-agent, amd-dbgapi                                 |                                                  |
+| `amdrocm-hipify`             | HIPIFY                                                               |                                                  |
+| `amdrocm-opencl`             | OpenCL runtime (ocl-clr, ocl-icd)                                    | OpenCL headers                                   |
+| `amdrocm-decode`             | rocDecode                                                            | rocDecode headers                                |
+| `amdrocm-jpeg`               | rocJPEG                                                              | rocJPEG headers                                  |
+| `amdrocm-rdc`                | ROCm Data Center tool                                                |                                                  |
+| `amdrocm-math-common`        | SuiteSparse, host-blas                                               |                                                  |
 
 Winget package identifiers may use Windows ecosystem naming conventions such as `AMD.ROCm`, but they should map cleanly to the same product and component boundaries.
-
-### Installer for ROCm on Windows
-
-Windows package granularity should follow the same general model as Linux: runtime and development responsibilities must be separable, and developer tools must be independently installable.
-
-The high-level package groupings that must be available can be seen from the table above.
-
-Windows package composition may evolve as TheRock matures, but the runtime vs. development vs. tools split must remain clear.
 
 ### ROCm Installer Branding 
 
