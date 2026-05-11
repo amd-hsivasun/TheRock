@@ -1,7 +1,7 @@
 ---
 author: Liam Berry (LiamfBerry), Saad Rahim (saadrahim)
 created: 2026-03-13
-modified: 2026-03-30
+modified: 2026-05-11
 status: draft
 ---
 
@@ -199,8 +199,9 @@ At minimum, the following install configurations must be supported:
 
 - **Core SDK**: default developer installation
 - **Runtime Only**: minimal runtime footprint for executing prebuilt applications and redistribution workflows
+- **Compile Only**: HIP API headers, the HIP compiler toolchain, and CMake configuration files required to compile HIP and ROCm applications on machines without an AMD GPU present. This configuration must not require GPU detection, driver presence, or runtime libraries at install time and is intended for headless build servers, CI agents, and cross-compilation workflows
 - **Developer Tools Only**: debugging, profiling, and diagnostics when runtime is already present
-- **Custom**: component-level selection for advanced users where supported by package dependency rules
+- **Custom**: component-level selection for advanced users where supported by package dependency rules. Users must be able to select or deselect individual component groups (e.g., HIP API, runtime, compiler, math libraries, communication libraries) independently, subject to declared dependency constraints
 
 These configurations may be implemented as separate packages, features, meta packages, or a combination thereof, but their behavior must remain well-defined and documented.
 
@@ -228,6 +229,73 @@ msiexec /famus amdrocm-core-sdk.msi /quiet
 ```
 
 MSI installers should be GUI-less or minimal-UI by default and must support unattended enterprise deployment.
+
+### Command-Line Installation Interface
+
+The ROCm installer must provide a first-class command-line installation interface that supports both interactive and non-interactive workflows. This is required to serve headless build machines, CI/CD agents, and developers who prefer terminal-based tooling.
+
+Component selection is driven by MSI features exposed through the standard `ADDLOCAL` property. At minimum, the following feature identifiers must be independently selectable:
+
+| Feature identifier | Contents                                          |
+| :----------------- | :------------------------------------------------ |
+| `HipApi`           | HIP API headers and CMake configuration           |
+| `HipRuntime`       | HIP runtime                                       |
+| `HipCompiler`      | HIP compiler toolchain (clang, device libraries)  |
+| `CoreRuntime`      | ROCm core runtime libraries                       |
+| `MathLibs`         | Math libraries (rocBLAS, rocFFT, rocSPARSE, etc.) |
+| `CommLibs`         | Communication libraries (RCCL, rocSHMEM)          |
+| `DevTools`         | Developer tools (profiler, debugger, tracer)      |
+| `RayTracing`       | Ray tracing libraries                             |
+
+**Interactive CLI mode:**
+
+When invoked from a terminal without `/quiet`, the MSI installer must present an interactive dialog or console-based menu that lists available component groups and allows the user to select which to install.
+
+Example:
+
+```
+msiexec /i amdrocm-core-sdk.msi
+
+ROCm SDK Installer vX.Y.Z
+Select components to install (space to toggle, enter to confirm):
+
+  [x] HIP API headers and CMake configuration
+  [x] HIP runtime
+  [x] HIP compiler toolchain
+  [ ] ROCm core runtime libraries
+  [ ] Math libraries (rocBLAS, rocFFT, rocSPARSE, ...)
+  [ ] Communication libraries (RCCL, rocSHMEM)
+  [ ] Developer tools (profiler, debugger, tracer)
+  [ ] Ray tracing libraries
+
+Selected: HIP API, HIP runtime, HIP compiler
+Proceed? [Y/n]
+```
+
+**Non-interactive CLI mode:**
+
+The installer must accept MSI properties for fully unattended component selection. This enables scripted CI/CD provisioning and infrastructure-as-code workflows without requiring GUI interaction or manual menu navigation.
+
+Example:
+
+```
+msiexec /i amdrocm-core-sdk.msi ADDLOCAL=HipApi,HipRuntime,HipCompiler /quiet
+msiexec /i amdrocm-core-sdk.msi ADDLOCAL=HipApi,HipCompiler TARGETARCH=gfx1100 /quiet
+msiexec /i amdrocm-core-sdk.msi INSTALLCONFIG=CompileOnly /quiet
+msiexec /i amdrocm-core-sdk.msi ADDLOCAL=ALL /quiet
+```
+
+The full list of available feature identifiers and their descriptions should be documented alongside the installer and queryable via standard MSI tooling.
+
+**Headless and GPU-less build machine support:**
+
+The installer must not require an AMD GPU to be present on the target machine. GPU auto-detection must be treated as an optional convenience for selecting device-specific packages, not a prerequisite for installation. When no GPU is detected, the installer must:
+
+- Allow installation to proceed without error
+- Skip device-specific binary packages unless the user explicitly specifies target architectures via the `TARGETARCH` property
+- Install all requested host-side components (headers, compiler, CMake configs, libraries) without degradation
+
+This enables the common workflow where developers compile HIP applications on GPU-less build servers and deploy to GPU-equipped machines.
 
 ### Device-Specific Architecture Packages
 
@@ -269,6 +337,13 @@ Selects ALL GPU architectures
 
 User wants to get ROCm Runtime and ROCm Core for gfx family
 Multiple msi files are downloaded for use case and gfx family
+
+5. **Headless build machine without AMD GPU**:
+
+Developer or CI system installs ROCm compile toolchain on a machine with no AMD GPU
+Launcher skips GPU auto-detection gracefully
+Installs host-only packages (HIP API, compiler, headers, CMake configs)
+User optionally specifies `TARGETARCH` to include device libraries for cross-compilation targets (e.g., `msiexec /i amdrocm-core-sdk.msi ADDLOCAL=HipApi,HipCompiler TARGETARCH=gfx1100 /quiet`)
 
 It should also be noted that Windows installation should be published in `repo.amd.com/rocm/win/...`.
 
