@@ -115,12 +115,12 @@ C:\ProgramData\AMD\ROCm\
 
 ### Path Length Requirements
 
-Native Windows 10 and higher have the `MAX_PATH` environment variable set to 260 characters but can support up to a 32 thousand character path if the following two conditions are met:
+Native Windows 10 and higher have a traditional Win32 `MAX_PATH` limit of 260 characters, but can support up to 32,767 characters if the following two conditions are met:
 
 1. **The OS enabled the long paths option**: Computer Configuration -> Administrative Templates -> System -> Filesystem -> Enable Win32 long paths.
 1. **The program** must include the <longPathAware>true</longPathAware> XML tag.
 
-The enablement of long paths is required for registry key names involving the SDK files. This includes CMake, headers, etc. and excludes the runtimes. All redistributable runtimes will support the default `MAX_PATH` length of 260 characters.
+The enablement of long paths is required for installed SDK file paths that may exceed `MAX_PATH`. This includes CMake files, headers, and similar SDK content, and excludes the runtimes. All redistributable runtimes will support the default `MAX_PATH` length of 260 characters.
 
 The installer should have an option to enable:
 
@@ -152,7 +152,7 @@ All new Windows ROCm runtime components must be installed into the package insta
 - `PATH` entries associated with the selected ROCm installation
 - Registry-based SDK discovery
 - Environment-variable-based SDK discovery
-- `ROCM_PATH` environment variable must point to the latest ROCm release
+- Optional `ROCM_PATH` environment variable for convenience-based discovery of the selected ROCm installation
 
 New installations must not place core ROCm runtime DLLs into `System32`. Legacy driver-installed runtime DLLs in `System32` that conflict with the new Windows packaging model must be detected and handled by the appropriate runtime installer. At a minimum, the Windows runtime package must handle cleanup of legacy `amdhip64` and `amd_comgr` placements when present, while preserving installer robustness if files are locked or permissions are insufficient.
 
@@ -391,17 +391,17 @@ Winget packages must:
 
 A top-level package identifier such as `AMD.ROCm` may be used for the primary Windows SDK experience. Additional componentized identifiers may be introduced if needed, but must remain aligned with the same package boundaries defined by this RFC.
 
-### Visual Studio Code Plugin Requirements
+### Visual Studio Extension Requirements
 
-A Visual Studio plugin must for ROCm must support deterministic discovery of the ROCm toolchain and associated build binaries on Windows. The plugin must support two binding modes:
+A Visual Studio extension for ROCm must support deterministic discovery of the ROCm toolchain and associated build binaries on Windows. The plugin must support two binding modes:
 
 **Bind built binaries with latest**
-The plugin resolves the SDK/toolchain root from an environment variable, in this case `ROCM_PATH`. This allows projects to automatically build against the most recently installed ROCm version.
+The extension resolves the SDK/toolchain root from an environment variable, in this case `ROCM_PATH`. This allows projects to automatically build against the most recently installed ROCm version.
 
 **Bind fixed version using registry keys**
-The plugin resolves the SDK/toolchain root from a version-specific installation record (e.g., Windows registry or installer metadata). This allows projects to bind to a specific ROCm version for reproducible builds and CI environments.
+The extension resolves the SDK/toolchain root from a version-specific installation record (e.g., Windows registry or installer metadata). This allows projects to bind to a specific ROCm version for reproducible builds and CI environments.
 
-The plugin must clearly indicate the resolved SDK path and version used for the build.
+The extension must clearly indicate the resolved SDK path and version used for the build.
 
 ### Logging Requirements
 
