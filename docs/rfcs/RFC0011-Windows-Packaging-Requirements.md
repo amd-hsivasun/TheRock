@@ -91,7 +91,7 @@ C:\Program Files\AMD\ROCm\Core-8  ->  C:\Program Files\AMD\ROCm\Core-8.2
 C:\Program Files\AMD\ROCm\raytracing-8  ->  C:\Program Files\AMD\ROCm\raytracing-8.2
 ```
 
-This allows users, scripts, and build systems to either target and latest installed release or pin to a major line while still preserving independently versioned install roots. On Windows, symbolic links require that the user has administrative privileges or Windows Developer Mode is enabled. This is not guaranteed in enterprise systems, CI environments, and customer deployments. Due to this, symlinks will not be required for the correct operation of ROCm and will be provided as an optional convenience feature only.
+This allows users, scripts, and build systems to either target the latest installed release or pin to a major line while still preserving independently versioned install roots. On Windows, symbolic links require that the user has administrative privileges or Windows Developer Mode is enabled. This is not guaranteed in enterprise systems, CI environments, and customer deployments. Due to this, symlinks will not be required for the correct operation of ROCm and will be provided as an optional convenience feature only.
 
 Additionally, all Windows caches for FFT and other programs will be stored in the following location:
 
