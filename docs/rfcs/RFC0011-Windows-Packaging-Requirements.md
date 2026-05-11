@@ -11,7 +11,7 @@ With the implementation of TheRock build system, native Windows packaging and in
 
 Our goals are to:
 
-1. **Standardize packaging behaviour for native Windows ROCm software**
+1. **Standardize packaging behavior for native Windows ROCm software**
 1. **Ensure predictable installation, upgrade, repair, side-by-side support, and uninstall behavior**
 1. **Provide redistributable-friendly Windows delivery mechanisms for developers, IT administrators, and ISVs**
 1. **Align Windows packaging structure with the broader TheRock cross-platform packaging model where practical**
