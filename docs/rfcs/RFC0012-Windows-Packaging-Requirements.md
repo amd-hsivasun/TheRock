@@ -11,7 +11,7 @@ With the implementation of TheRock build system, native Windows packaging and in
 
 Our goals are to:
 
-1. **Standardize packaging behaviour for native Windows ROCm software**
+1. **Standardize packaging behavior for native Windows ROCm software**
 1. **Ensure predictable installation, upgrade, repair, multi-version support, and uninstall behavior**
 1. **Provide redistributable-friendly Windows delivery mechanisms for developers, IT administrators, and ISVs**
 1. **Align Windows packaging structure with the broader TheRock cross-platform packaging model where practical**
@@ -91,7 +91,7 @@ C:\Program Files\AMD\ROCm\Core-8  ->  C:\Program Files\AMD\ROCm\Core-8.2
 C:\Program Files\AMD\ROCm\raytracing-8  ->  C:\Program Files\AMD\ROCm\raytracing-8.2
 ```
 
-This allows users, scripts, and build systems to either target and latest installed release or pin to a major line while still preserving independently versioned install roots. On Windows, symbolic links require that the user has administrative privileges or Windows Developer Mode is enabled. This is not guaranteed in enterprise systems, CI environments, and customer deployments. Due to this, symlinks will not be required for the correct operation of ROCm and will be provided as an optional convenience feature only.
+This allows users, scripts, and build systems to either target the latest installed release or pin to a major line while still preserving independently versioned install roots. On Windows, symbolic links require that the user has administrative privileges or Windows Developer Mode is enabled. This is not guaranteed in enterprise systems, CI environments, and customer deployments. Due to this, symlinks will not be required for the correct operation of ROCm and will be provided as an optional convenience feature only.
 
 Additionally, all Windows caches for FFT and other programs will be stored in the following location:
 
