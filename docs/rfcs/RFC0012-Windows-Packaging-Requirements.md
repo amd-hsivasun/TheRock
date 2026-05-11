@@ -12,7 +12,7 @@ With the implementation of TheRock build system, native Windows packaging and in
 Our goals are to:
 
 1. **Standardize packaging behaviour for native Windows ROCm software**
-1. **Ensure predictable installation, upgrade, repair, side-by-side support, and uninstall behavior**
+1. **Ensure predictable installation, upgrade, repair, multi-version support, and uninstall behavior**
 1. **Provide redistributable-friendly Windows delivery mechanisms for developers, IT administrators, and ISVs**
 1. **Align Windows packaging structure with the broader TheRock cross-platform packaging model where practical**
 1. **Support automated artifact generation and productized deliverables from TheRock**
@@ -26,11 +26,11 @@ Our goals are to:
 - Winget package and meta-package requirements
 - Runtime, development, and developer-tools package separation
 - Installation directory layout and package granularity
-- Side-by-side installation policy for major.minor versions
+- Multi-version installation policy for major.minor versions
 - Patch upgrade behavior
 - Environment variables, registry keys, and discovery mechanisms
 - Logging, signing, and Windows-specific installation semantics
-- Guidance for legacy System32 runtime cleanup and migration
+- Guidance for legacy System32 runtime migration
 
 ### Out of Scope
 
@@ -58,7 +58,7 @@ Note that MSI packages are the authoritative Windows installation unit.
 
 ### Directory Layout
 
-The ROCm Core SDK on Windows must be installed under a versioned installation root to support side-by-side installation of major.minor releases.
+The ROCm Core SDK on Windows must be installed under a versioned installation root to support multi-version installation of major.minor releases.
 
 ```
 C:\Program Files\AMD\ROCm\Core-X.Y
@@ -68,8 +68,8 @@ Where:
 
 - `X.Y` is the major and minor version
 - Patch versions must be installed in place within the existing `X.Y` directory
-- Side-by-side installation is supported for different major.minor versions
-- Patch-only side-by-side installation is not supported
+- Multi-version installation is supported for different major.minor versions
+- Patch-only multi-version installation is not supported
 
 The installed directory structure must mirror the cross-platform ROCm layout as closely as practical:
 
@@ -96,7 +96,7 @@ This allows users, scripts, and build systems to either target and latest instal
 Additionally, all Windows caches for FFT and other programs will be stored in the following location:
 
 ```
-C:\Program Data\AMD\ROCm\
+C:\ProgramData\AMD\ROCm\
 ```
 
 Caches are stored system wide and matches Windows guidelines for application data.
@@ -104,7 +104,7 @@ Caches are stored system wide and matches Windows guidelines for application dat
 Example:
 
 ```
-C:\Program Data\AMD\ROCm\
+C:\ProgramData\AMD\ROCm\
   cache\
       fft\
       rtc\
@@ -284,7 +284,7 @@ The following behavior matrix must be supported:
 | Older version detected at the same target path             | Perform in-place upgrade                                                                           |
 | Same version detected at the same target path              | Return success with no action, unless an explicit repair or reinstall mode is requested            |
 | Newer version detected at the same target path             | Abort with error and instruct the user to uninstall or choose a different path                     |
-| Different major.minor version detected at a different path | Allow side-by-side installation                                                                    |
+| Different major.minor version detected at a different path | Allow multi-version installation                                                                    |
 
 Patch versions must upgrade in place within the same `X.Y` installation root.
 
@@ -335,7 +335,7 @@ The convenience variable `ROCM_PATH` is last-writer-wins. Build systems and appl
 
 ### Registry Requirements
 
-To support discovery and side-by-side versioning, Windows ROCm installers must create versioned registry keys. It should also be noted that registry key locations are system wide, not per user.
+To support discovery and multiple versioning, Windows ROCm installers must create versioned registry keys. It should also be noted that registry key locations are system wide, not per user.
 
 Per-machine installs:
 
