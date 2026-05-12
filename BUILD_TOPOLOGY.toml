@@ -158,7 +158,6 @@ artifact_groups = [
     "opencl-runtime",
     "profiler-core",
     "rocrtst",
-    "opencl-cts"
 ]
 
 [build_stages.math-libs]
@@ -561,7 +560,6 @@ artifact_group = "opencl-cts"
 type = "target-neutral"
 artifact_deps = ["core-ocl"]
 feature_name = "OPENCL_CTS"
-feature_group = "CORE"
 disable_platforms = ["windows"]
 
 [artifacts.core-hipinfo]
