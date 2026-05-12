@@ -224,7 +224,6 @@ Windows package granularity must match the Linux model defined in [RFC0009](./RF
 | `amdrocm-profiler`           | rocprofiler-compute, rocprofiler-systems                             |                                                  |
 | `amdrocm-debugger`           | rocgdb, rocr-debug-agent, amd-dbgapi                                 |                                                  |
 | `amdrocm-hipify`             | HIPIFY                                                               |                                                  |
-| `amdrocm-opencl`             | OpenCL runtime (ocl-clr, ocl-icd)                                    | OpenCL headers                                   |
 | `amdrocm-decode`             | rocDecode                                                            | rocDecode headers                                |
 | `amdrocm-jpeg`               | rocJPEG                                                              | rocJPEG headers                                  |
 | `amdrocm-rdc`                | ROCm Data Center tool                                                |                                                  |
