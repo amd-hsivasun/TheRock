@@ -225,8 +225,8 @@ def cmd_extract_gfx_arch(args: argparse.Namespace) -> int:
 # Maps OS profile prefixes to container images (checked in order).
 _OS_PROFILE_TO_IMAGE: list[tuple[tuple[str, ...], str]] = [
     (("sles",), "registry.suse.com/bci/bci-base:16.0"),
-    (("ubuntu", "debian"), "ubuntu:24.04"),
-    ((), "registry.access.redhat.com/ubi10/ubi:10.1"),  # default (e.g. rhel*)
+    (("ubuntu", "debian"), "ghcr.io/rocm/no_rocm_image_ubuntu24_04@sha256:405945a40deaff9db90b9839c0f41d4cba4a383c1a7459b28627047bf6302a26"),
+    ((), "ghcr.io/rocm/no_rocm_image_ubi10@sha256:a10f34d6006a20d02cf688982de9dea147710927ed405a3b0d5c73b58a6030c0"),  # default (e.g. rhel*)
 ]
 
 
