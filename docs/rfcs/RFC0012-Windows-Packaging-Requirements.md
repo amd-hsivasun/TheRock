@@ -205,7 +205,6 @@ Windows package granularity must match the Linux model defined in [RFC0009](./RF
 
 | Package Name                 | Runtime Contents                                                     | Dev Package Contents (additional)                |
 | :--------------------------- | :------------------------------------------------------------------- | :----------------------------------------------- |
-| `amdrocm-sysdeps`            | Bundled 3rd party dependencies (libdrm, libelf, ncurses, etc.)       |                                                  |
 | `amdrocm-base`               | rocminfo, rocm-core, rocprofiler-register, rocm-cmake, half          |                                                  |
 | `amdrocm-llvm`               | amd-llvm, hipcc, aux-overlay                                         | amd-llvm headers, hipcc headers                  |
 | `amdrocm-runtime`            | ROCR-Runtime, CLR, rocm-kpack, amd-comgr                             | ROCR-Runtime headers, CLR headers, comgr headers |
