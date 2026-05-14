@@ -41,16 +41,20 @@ from github_actions_api import gha_set_output
 
 
 # Repository configuration map
+# "stages" defines which build stages actually need this external repo checked out.
+# This enables stage-specific checkouts to avoid unnecessary clones.
 REPO_CONFIGS: Dict[str, Dict[str, Any]] = {
     "rocm-libraries": {
         "cmake_source_var": "THEROCK_ROCM_LIBRARIES_SOURCE_DIR",
         "submodule_path": "rocm-libraries",
         "skip_submodules": ["rocm-libraries"],
+        "stages": ["math-libs", "fusilli-libs"],
     },
     "rocm-systems": {
         "cmake_source_var": "THEROCK_ROCM_SYSTEMS_SOURCE_DIR",
         "submodule_path": "rocm-systems",
         "skip_submodules": ["rocm-systems"],
+        "stages": ["compiler-runtime"],
     },
     # Future repos can be added here:
     # "llvm-project": {...},
@@ -431,6 +435,7 @@ def main(argv=None):
             "checkout_path": checkout_path,
             "source_package": source_package,
             "fetch_sources_args": config.get("fetch_sources_args", ""),
+            "stages": config.get("stages", []),
         }
         config["config_json"] = json.dumps(config_json)
         print(
