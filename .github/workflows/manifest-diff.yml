@@ -127,8 +127,13 @@ jobs:
             --index-file-name index.html
 
       - name: Post manifest-diff report link to bump PR
+        # DEMO-ONLY: always() added to force this step to run despite the
+        # Upload step failing on this fork (no AWS creds available here).
+        # Do not carry this to the real PR: skipping when upload fails is
+        # correct there, since the linked report wouldn't actually exist.
         if: >-
           ${{
+            always() &&
             steps.gen-report.conclusion == 'success' &&
             github.event_name == 'pull_request' &&
             startsWith(github.event.pull_request.head.ref, 'bump-')
